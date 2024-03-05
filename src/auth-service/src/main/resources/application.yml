@@ -1,1 +1,17 @@
-
+spring:
+  data:
+    redis:
+        host: localhost
+        port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: phishing
+    password: phishing
+    url: jdbc:mysql://localhost:3306/phishing?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop

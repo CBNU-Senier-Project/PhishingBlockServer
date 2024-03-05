@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  phishing-mysql:
+    image: mysql:latest
+    container_name: phishing-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: phishing
+      MYSQL_USER: phishing
+      MYSQL_PASSWORD: phishing
+      TZ: Asia/Seoul
+    command: [ "--character-set-server=utf8mb4" ]
+    ports:
+      - "3306:3306"
+    networks:
+      - phishing-network
+  phishing-adminer:
+    image: adminer:latest
+    container_name: phishing-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: phishing-mysql
+    ports:
+      - "18080:8080"
+    networks:
+      - phishing-network
+  phishing-redis:
+    image: redis:latest
+    container_name: phishing-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - phishing-network
+networks:
+    phishing-network:
+        driver: bridge

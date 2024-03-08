@@ -1,0 +1,5 @@
+jwt:
+  secret:
+    access: 86400000
+    refresh: 86400000
+    key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey

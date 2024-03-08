@@ -1,5 +1,6 @@
 package com.phishing.authservice.controller;
 
+import com.phishing.authservice.dto.request.SignInRequest;
 import com.phishing.authservice.dto.request.SignUpRequest;
 import com.phishing.authservice.service.AuthService;
 import jakarta.validation.Valid;
@@ -26,5 +27,10 @@ public class AuthController {
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest request) {
         authService.signUp(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<?> signIn(@RequestBody @Valid SignInRequest request) {
+        return ResponseEntity.ok(authService.signIn(request));
     }
 }

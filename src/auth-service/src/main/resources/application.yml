@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: jwt
+    active: jwt, mail
   data:
     redis:
         host: localhost

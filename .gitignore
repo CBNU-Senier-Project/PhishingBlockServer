@@ -261,3 +261,5 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,intellij,java,git,gradle,maven
 build
+
+/src/auth-service/src/main/resources/application-mail.yml

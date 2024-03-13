@@ -2,12 +2,15 @@ package com.phishing.authservice.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
+@DynamicUpdate
 @Entity
 public class User {
 
@@ -49,5 +52,11 @@ public class User {
                 .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    public void editProfile(String nickname, String phnum) {
+        this.nickname = nickname;
+        this.phnum = phnum;
+        this.updatedAt = LocalDateTime.now();
     }
 }

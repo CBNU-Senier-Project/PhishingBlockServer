@@ -36,27 +36,6 @@ public class AuthService {
     @Value("${jwt.secret.refresh}")
     private Long refreshTime;
 
-    public void checkEmail(String email) {
-        // Check if email already exists
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicateEmailException("Email already exists");
-        }
-    }
-
-    public void signUp(SignUpRequest request) {
-        // Check if email already exists
-        checkEmail(request.email());
-        // Create user
-        User user = User.signUp(
-                request.email(),
-                passwordEncoder.encode(request.password()),
-                request.nickname(),
-                request.phnum()
-        );
-        // Save user
-        userRepository.save(user);
-    }
-
     public ReturnToken signIn(SignInRequest request) {
         // Check if email isn't exists
         userRepository.existsByEmail(request.email());

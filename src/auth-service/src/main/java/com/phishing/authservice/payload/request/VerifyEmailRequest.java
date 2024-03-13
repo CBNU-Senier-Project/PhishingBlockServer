@@ -1,4 +1,4 @@
-package com.phishing.authservice.dto.request;
+package com.phishing.authservice.payload.request;
 
 public record VerifyEmailRequest(
         String email,

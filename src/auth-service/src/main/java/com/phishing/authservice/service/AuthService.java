@@ -4,10 +4,7 @@ import com.phishing.authservice.component.token.ReturnToken;
 import com.phishing.authservice.component.token.TokenProvider;
 import com.phishing.authservice.component.token.TokenResolver;
 import com.phishing.authservice.domain.User;
-import com.phishing.authservice.domain.UserRole;
-import com.phishing.authservice.dto.request.SignInRequest;
-import com.phishing.authservice.dto.request.SignUpRequest;
-import com.phishing.authservice.exception.exceptions.DuplicateEmailException;
+import com.phishing.authservice.payload.request.SignInRequest;
 import com.phishing.authservice.exception.exceptions.InvalidPasswordException;
 import com.phishing.authservice.redis.RedisDao;
 import com.phishing.authservice.repository.UserRepository;
@@ -57,8 +54,8 @@ public class AuthService {
         String accessToken = request.getHeader("Authorization");
         String refreshToken = request.getHeader("RefreshToken");
         // set refresh token's blacklist ttl
-        long refreshTime = tokenResolver.getExpiration(refreshToken);
-        long ttl = refreshTime - System.currentTimeMillis();
+        long remainTime = tokenResolver.getExpiration(refreshToken);
+        long ttl = remainTime - System.currentTimeMillis();
         // Get user email from jwt token
         String email = tokenResolver.getClaims(accessToken).email();
         // Delete refresh token in redis

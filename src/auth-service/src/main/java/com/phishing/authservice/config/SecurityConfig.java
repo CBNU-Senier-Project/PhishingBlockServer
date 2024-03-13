@@ -23,6 +23,7 @@ public class SecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/v3/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/api/v1/signout").authenticated()
                 )
                 .build();

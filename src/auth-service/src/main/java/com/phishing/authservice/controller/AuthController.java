@@ -5,6 +5,7 @@ import com.phishing.authservice.dto.request.SignUpRequest;
 import com.phishing.authservice.dto.request.VerifyEmailRequest;
 import com.phishing.authservice.service.AuthService;
 import com.phishing.authservice.service.MailService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,11 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody @Valid SignInRequest request) {
         return ResponseEntity.ok(authService.signIn(request));
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> signOut(HttpServletRequest request){
+        authService.signOut(request);
+        return ResponseEntity.ok().build();
     }
 }

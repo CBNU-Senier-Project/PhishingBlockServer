@@ -2,6 +2,7 @@ package com.phishing.authservice.service;
 
 import com.phishing.authservice.component.token.ReturnToken;
 import com.phishing.authservice.component.token.TokenProvider;
+import com.phishing.authservice.component.token.TokenResolver;
 import com.phishing.authservice.domain.User;
 import com.phishing.authservice.domain.UserRole;
 import com.phishing.authservice.dto.request.SignInRequest;
@@ -10,6 +11,7 @@ import com.phishing.authservice.exception.exceptions.DuplicateEmailException;
 import com.phishing.authservice.exception.exceptions.InvalidPasswordException;
 import com.phishing.authservice.redis.RedisDao;
 import com.phishing.authservice.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,11 +31,11 @@ public class AuthService {
     private final RedisDao redisDao;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final TokenResolver tokenResolver;
 
     @Value("${jwt.secret.refresh}")
     private Long refreshTime;
 
-    @Transactional
     public void checkEmail(String email) {
         // Check if email already exists
         if (userRepository.existsByEmail(email)) {
@@ -41,7 +43,6 @@ public class AuthService {
         }
     }
 
-    @Transactional
     public void signUp(SignUpRequest request) {
         // Check if email already exists
         checkEmail(request.email());
@@ -56,7 +57,6 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    @Transactional
     public ReturnToken signIn(SignInRequest request) {
         // Check if email isn't exists
         userRepository.existsByEmail(request.email());
@@ -67,10 +67,26 @@ public class AuthService {
         // return jwt token
         ReturnToken returnToken = tokenProvider.provideTokens(loginUser);
         // save refresh token in redis
-        redisDao.setRedisValues(String.valueOf(loginUser.getId()),
+        redisDao.setRedisValues(loginUser.getEmail(),
                 returnToken.refreshToken(), Duration.ofMillis(refreshTime));
 
         return returnToken;
     }
 
+    public void signOut(HttpServletRequest request) {
+        // Get user id from jwt token
+        String accessToken = request.getHeader("Authorization");
+        String refreshToken = request.getHeader("RefreshToken");
+        // set refresh token's blacklist ttl
+        long refreshTime = tokenResolver.getExpiration(refreshToken);
+        long ttl = refreshTime - System.currentTimeMillis();
+        // Get user email from jwt token
+        String email = tokenResolver.getClaims(accessToken).email();
+        // Delete refresh token in redis
+        if (redisDao.isExistKey(email)) {
+            redisDao.deleteRedisValues(email);
+        }
+        // save refresh token to blacklist
+        redisDao.setRedisValues("Blacklist_" + email, refreshToken, Duration.ofMillis(ttl));
+    }
 }

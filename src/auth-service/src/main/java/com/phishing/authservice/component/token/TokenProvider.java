@@ -23,7 +23,7 @@ public class TokenProvider {
 
     public ReturnToken provideTokens(User user) {
         Claims claims = buildClaims(user);
-        Claims refresh_claims = buildClaims(user.getId());
+        Claims refresh_claims = buildClaims(user.getEmail());
         return new ReturnToken(
                 generateToken(claims, ACCESS_TIME),
                 generateToken(refresh_claims, REFRESH_TIME)
@@ -39,15 +39,15 @@ public class TokenProvider {
 
     private static Claims buildClaims(User user) {
         Claims claims = Jwts.claims();
-        claims.put("USER_ID", user.getId());
+        claims.put("USER_ID", user.getEmail());
         claims.put("USER_NICKNAME", user.getNickname());
         claims.put("USER_ROLE", user.getRole());
         return claims;
     }
 
-    private static Claims buildClaims(Long id) {
+    private static Claims buildClaims(String email) {
         Claims claims = Jwts.claims();
-        claims.put("USER_ID", id);
+        claims.put("USER_ID", email);
         return claims;
     }
 

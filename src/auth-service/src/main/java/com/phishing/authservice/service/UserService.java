@@ -5,7 +5,7 @@ import com.phishing.authservice.domain.User;
 import com.phishing.authservice.payload.request.EditProfileRequest;
 import com.phishing.authservice.payload.request.SignUpRequest;
 import com.phishing.authservice.exception.exceptions.DuplicateEmailException;
-import com.phishing.authservice.payload.MemberInfo;
+import com.phishing.authservice.payload.token.MemberInfo;
 import com.phishing.authservice.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,13 +47,20 @@ public class UserService {
     public void editProfile(HttpServletRequest httpServletRequest, EditProfileRequest request){
         MemberInfo memberInfo = getMemberInfoToToken(httpServletRequest);
 
-        User targetUser = userRepository.findByEmail(memberInfo.email())
+        User targetUser = userRepository.findByEmailAndIsDeletedIsFalse(memberInfo.email())
                 .orElseThrow(() -> new DuplicateEmailException("Email Not exists"));
 
         targetUser.editProfile(
                 request.nickname(),
                 request.phnum()
         );
+    }
+
+    public void resignUser(HttpServletRequest request) {
+        MemberInfo memberInfo = getMemberInfoToToken(request);
+        User targetUser = userRepository.findByEmailAndIsDeletedIsFalse(memberInfo.email())
+                .orElseThrow(() -> new DuplicateEmailException("Email Not exists"));
+        targetUser.resignUser();
     }
 
     private MemberInfo getMemberInfoToToken(HttpServletRequest request) {

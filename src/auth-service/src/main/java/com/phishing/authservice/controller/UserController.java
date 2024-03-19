@@ -51,4 +51,11 @@ public class UserController {
         userService.editProfile(httpServletRequest, editProfileRequest);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/resign")
+    public ResponseEntity<Void> resignUser(HttpServletRequest httpServletRequest) {
+        userService.resignUser(httpServletRequest);
+        return ResponseEntity.ok().build();
+    }
+
 }

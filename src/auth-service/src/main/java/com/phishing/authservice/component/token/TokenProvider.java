@@ -32,6 +32,7 @@ public class TokenProvider {
     private String generateToken(Claims claims, long time) {
         return Jwts.builder()
                 .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + time))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();

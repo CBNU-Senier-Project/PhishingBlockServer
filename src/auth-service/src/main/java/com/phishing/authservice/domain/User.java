@@ -34,6 +34,9 @@ public class User {
     @Column(name = "role", nullable = false, length = 10)
     private UserRole role;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -50,6 +53,7 @@ public class User {
                 .nickname(nickname)
                 .phnum(phnum)
                 .role(UserRole.USER)
+                .isDeleted(false)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -58,5 +62,10 @@ public class User {
         this.nickname = nickname;
         this.phnum = phnum;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void resignUser() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 }

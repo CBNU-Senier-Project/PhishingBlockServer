@@ -1,8 +1,8 @@
 package com.phishing.authservice.controller;
 
-import com.phishing.authservice.dto.request.EditProfileRequest;
-import com.phishing.authservice.dto.request.SignUpRequest;
-import com.phishing.authservice.dto.request.VerifyEmailRequest;
+import com.phishing.authservice.payload.request.EditProfileRequest;
+import com.phishing.authservice.payload.request.SignUpRequest;
+import com.phishing.authservice.payload.request.VerifyEmailRequest;
 import com.phishing.authservice.service.MailService;
 import com.phishing.authservice.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,33 +22,40 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/users/check")
-    public ResponseEntity<?> checkEmail(@RequestParam @Valid @NotNull String email) {
+    public ResponseEntity<Void> checkEmail(@RequestParam @Valid @NotNull String email) {
         userService.checkEmail(email);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/email/send")
-    public ResponseEntity<?> sendMail(@RequestParam @Valid @NotNull String email) {
+    public ResponseEntity<Void> sendMail(@RequestParam @Valid @NotNull String email) {
         mailService.sendMail(email);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/email/verify")
-    public ResponseEntity<?> verifyMail(@RequestBody @Valid VerifyEmailRequest request) {
+    public ResponseEntity<Void> verifyMail(@RequestBody @Valid VerifyEmailRequest request) {
         mailService.verifyMail(request.email(), request.authCode());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest request) {
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
         userService.signUp(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/users/edit")
-    public ResponseEntity<?> editProfile(HttpServletRequest httpServletRequest
+    public ResponseEntity<Void> editProfile(HttpServletRequest httpServletRequest
             , @RequestBody @Valid EditProfileRequest editProfileRequest) {
         userService.editProfile(httpServletRequest, editProfileRequest);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/resign")
+    public ResponseEntity<Void> resignUser(HttpServletRequest httpServletRequest) {
+        userService.resignUser(httpServletRequest);
+        return ResponseEntity.ok().build();
+    }
+
 }

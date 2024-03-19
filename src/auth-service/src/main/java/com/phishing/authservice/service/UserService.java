@@ -2,10 +2,10 @@ package com.phishing.authservice.service;
 
 import com.phishing.authservice.component.token.TokenResolver;
 import com.phishing.authservice.domain.User;
-import com.phishing.authservice.dto.request.EditProfileRequest;
-import com.phishing.authservice.dto.request.SignUpRequest;
+import com.phishing.authservice.payload.request.EditProfileRequest;
+import com.phishing.authservice.payload.request.SignUpRequest;
 import com.phishing.authservice.exception.exceptions.DuplicateEmailException;
-import com.phishing.authservice.payload.MemberInfo;
+import com.phishing.authservice.payload.token.MemberInfo;
 import com.phishing.authservice.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,19 +47,24 @@ public class UserService {
     public void editProfile(HttpServletRequest httpServletRequest, EditProfileRequest request){
         MemberInfo memberInfo = getMemberInfoToToken(httpServletRequest);
 
-        User targetUser = userRepository.findByEmail(memberInfo.email())
+        User targetUser = userRepository.findByEmailAndIsDeletedIsFalse(memberInfo.email())
                 .orElseThrow(() -> new DuplicateEmailException("Email Not exists"));
 
         targetUser.editProfile(
                 request.nickname(),
                 request.phnum()
         );
-        System.out.println("targetUser = " + targetUser.getNickname());
+    }
+
+    public void resignUser(HttpServletRequest request) {
+        MemberInfo memberInfo = getMemberInfoToToken(request);
+        User targetUser = userRepository.findByEmailAndIsDeletedIsFalse(memberInfo.email())
+                .orElseThrow(() -> new DuplicateEmailException("Email Not exists"));
+        targetUser.resignUser();
     }
 
     private MemberInfo getMemberInfoToToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        MemberInfo result = tokenResolver.getClaims(token);
-        return result;
+        return tokenResolver.getClaims(token);
     }
 }

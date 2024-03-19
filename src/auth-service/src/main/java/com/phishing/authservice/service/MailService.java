@@ -1,6 +1,7 @@
 package com.phishing.authservice.service;
 
 import com.phishing.authservice.exception.exceptions.AuthCodeExpireException;
+import com.phishing.authservice.exception.exceptions.FailCreateKeyException;
 import com.phishing.authservice.exception.exceptions.InvalidAuthCodeException;
 import com.phishing.authservice.exception.exceptions.FailSendEmailException;
 import com.phishing.authservice.redis.RedisDao;
@@ -79,7 +80,9 @@ public class MailService {
             return key.toString();
         } catch (NoSuchAlgorithmException e) {
             log.error("Failed to create random key", e);
-            throw new RuntimeException("Failed to create random key");
+            throw new FailCreateKeyException("Failed to create random key");
         }
     }
+
+
 }

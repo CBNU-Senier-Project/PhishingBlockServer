@@ -1,4 +1,4 @@
-package com.phishing.authservice.payload;
+package com.phishing.authservice.payload.token;
 
 import com.phishing.authservice.domain.UserRole;
 import lombok.Builder;

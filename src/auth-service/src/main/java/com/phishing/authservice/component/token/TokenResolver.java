@@ -1,7 +1,7 @@
 package com.phishing.authservice.component.token;
 
 import com.phishing.authservice.domain.UserRole;
-import com.phishing.authservice.payload.MemberInfo;
+import com.phishing.authservice.payload.token.MemberInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;

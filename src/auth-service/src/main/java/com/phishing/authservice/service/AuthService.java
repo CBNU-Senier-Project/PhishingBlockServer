@@ -37,7 +37,7 @@ public class AuthService {
         // Check if email isn't exists
         userRepository.existsByEmail(request.email());
         // Check if password is correct
-        User loginUser = userRepository.findByEmail(request.email())
+        User loginUser = userRepository.findByEmailAndIsDeletedIsFalse(request.email())
                 .filter(user -> passwordEncoder.matches(request.password(), user.getPassword()))
                 .orElseThrow(() -> new InvalidPasswordException("Invalid password"));
         // return jwt token

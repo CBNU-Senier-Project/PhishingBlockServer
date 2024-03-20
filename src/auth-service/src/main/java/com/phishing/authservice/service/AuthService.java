@@ -57,12 +57,32 @@ public class AuthService {
         long remainTime = tokenResolver.getExpiration(refreshToken);
         long ttl = remainTime - System.currentTimeMillis();
         // Get user email from jwt token
-        String email = tokenResolver.getClaims(accessToken).email();
+        String email = tokenResolver.getAccessClaims(accessToken).email();
         // Delete refresh token in redis
         if (redisDao.isExistKey(email)) {
             redisDao.deleteRedisValues(email);
         }
         // save refresh token to blacklist
         redisDao.setRedisValues("Blacklist_" + email, refreshToken, Duration.ofMillis(ttl));
+    }
+
+    public ReturnToken refresh(HttpServletRequest request) {
+        // Get user id from jwt token
+        String refreshToken = request.getHeader("RefreshToken");
+        // Get user email from jwt token
+        String email = tokenResolver.getRefreshClaims(refreshToken).email();
+        // Check if refresh token is valid
+        if (!redisDao.isExistKey(email) || !redisDao.getRedisValues(email).equals(refreshToken)) {
+            throw new InvalidPasswordException("Invalid refresh token");
+        }
+        // return jwt token
+        User loginUser = userRepository.findByEmailAndIsDeletedIsFalse(email)
+                .orElseThrow(() -> new InvalidPasswordException("Invalid refresh token"));
+        ReturnToken returnToken = tokenProvider.provideTokens(loginUser);
+        // save refresh token in redis
+        redisDao.setRedisValues(loginUser.getEmail(),
+                returnToken.refreshToken(), Duration.ofMillis(refreshTime));
+
+        return returnToken;
     }
 }

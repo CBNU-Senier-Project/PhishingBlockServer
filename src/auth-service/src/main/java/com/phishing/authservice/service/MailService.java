@@ -31,7 +31,6 @@ public class MailService {
     private long authCodeExpireTime;
 
     public void sendMail(String toMail) {
-        // Send mail
         log.info("Send mail to {}", toMail);
 
         String title = "PhishingBlock Mail verification";
@@ -47,7 +46,6 @@ public class MailService {
     }
 
     public void verifyMail(String toMail, String authCode) {
-        // Verify mail
         log.info("Verify mail to {}", toMail);
 
         String redisAuthCode = redisDao.getRedisValues(toMail);

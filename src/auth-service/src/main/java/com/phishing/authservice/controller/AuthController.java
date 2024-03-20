@@ -27,4 +27,9 @@ public class AuthController {
         authService.signOut(request);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ReturnToken> refresh(HttpServletRequest request){
+        return ResponseEntity.ok(authService.refresh(request));
+    }
 }

@@ -15,7 +15,7 @@ public class TokenResolver {
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
 
-    public MemberInfo getClaims(String token){
+    public MemberInfo getAccessClaims(String token){
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
                 .build()
@@ -26,6 +26,18 @@ public class TokenResolver {
                 .email(claims.get("USER_ID", String.class))
                 .nickname(claims.get("USER_NICKNAME", String.class))
                 .role(UserRole.valueOf(claims.get("USER_ROLE", String.class)))
+                .build();
+    }
+
+    public MemberInfo getRefreshClaims(String token){
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(removePrefix(token))
+                .getBody();
+
+        return MemberInfo.builder()
+                .email(claims.get("USER_ID", String.class))
                 .build();
     }
 

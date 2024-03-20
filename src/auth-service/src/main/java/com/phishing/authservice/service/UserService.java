@@ -65,6 +65,6 @@ public class UserService {
 
     private MemberInfo getMemberInfoToToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        return tokenResolver.getClaims(token);
+        return tokenResolver.getAccessClaims(token);
     }
 }

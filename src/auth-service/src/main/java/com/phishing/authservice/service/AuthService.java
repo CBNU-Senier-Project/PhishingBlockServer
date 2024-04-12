@@ -60,20 +60,20 @@ public class AuthService {
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
         long remainTime = tokenResolver.getExpiration(refreshToken);
         long ttl = remainTime - System.currentTimeMillis();
-        String email = tokenResolver.getAccessClaims(accessToken).email();
-        if (redisDao.isExistKey(email)) {
-            redisDao.deleteRedisValues(email);
+        Long userId = tokenResolver.getAccessClaims(accessToken);
+        if (redisDao.isExistKey(String.valueOf(userId))) {
+            redisDao.deleteRedisValues(String.valueOf(userId));
         }
-        redisDao.setRedisValues("Blacklist_" + email, refreshToken, Duration.ofMillis(ttl));
+        redisDao.setRedisValues("Blacklist_" + userId, refreshToken, Duration.ofMillis(ttl));
     }
 
     public ReturnToken refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-        String email = tokenResolver.getRefreshClaims(refreshToken).email();
-        if (!redisDao.isExistKey(email) || !redisDao.getRedisValues(email).equals(refreshToken)) {
+        Long userId = tokenResolver.getRefreshClaims(refreshToken);
+        if (!redisDao.isExistKey(String.valueOf(userId)) || !redisDao.getRedisValues(String.valueOf(userId)).equals(refreshToken)) {
             throw new InvalidPasswordException("Invalid refresh token");
         }
-        User loginUser = userRepository.findByEmailAndIsDeletedIsFalse(email)
+        User loginUser = userRepository.findByIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() -> new InvalidPasswordException("Invalid refresh token"));
         ReturnToken returnToken = tokenProvider.provideTokens(loginUser);
         redisDao.setRedisValues(loginUser.getEmail(),
@@ -84,8 +84,8 @@ public class AuthService {
 
     public String generatePassport(HttpServletRequest request) throws JsonProcessingException {
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
-        String user_email = tokenResolver.getAccessClaims(accessToken).email();
-        User user = userRepository.findByEmailAndIsDeletedIsFalse(user_email)
+        Long userId = tokenResolver.getAccessClaims(accessToken);
+        User user = userRepository.findByIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() -> new InvalidPasswordException("Invalid access token"));
         Passport result = passportGenerator.generatePassport(user);
         log.debug("Passport: {}", result);

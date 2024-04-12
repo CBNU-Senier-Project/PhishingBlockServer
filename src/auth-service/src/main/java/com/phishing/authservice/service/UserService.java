@@ -1,5 +1,6 @@
 package com.phishing.authservice.service;
 
+import com.phishing.authservice.component.passport.Passport;
 import com.phishing.authservice.component.token.TokenResolver;
 import com.phishing.authservice.domain.User;
 import com.phishing.authservice.payload.request.EditProfileRequest;
@@ -40,10 +41,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void editProfile(HttpServletRequest httpServletRequest, EditProfileRequest request){
-        MemberInfo memberInfo = getMemberInfoToToken(httpServletRequest);
-
-        User targetUser = userRepository.findByEmailAndIsDeletedIsFalse(memberInfo.email())
+    public void editProfile(Passport passport, EditProfileRequest request){
+        User targetUser = userRepository.findByIdAndIsDeletedIsFalse(passport.userId())
                 .orElseThrow(() -> new DuplicateEmailException("Email Not exists"));
 
         targetUser.editProfile(
@@ -52,14 +51,14 @@ public class UserService {
         );
     }
 
-    public void resignUser(HttpServletRequest request) {
-        MemberInfo memberInfo = getMemberInfoToToken(request);
-        User targetUser = userRepository.findByEmailAndIsDeletedIsFalse(memberInfo.email())
+    public void resignUser(Passport passport) {
+        Long userId = passport.userId();
+        User targetUser = userRepository.findByIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() -> new DuplicateEmailException("Email Not exists"));
         targetUser.resignUser();
     }
 
-    private MemberInfo getMemberInfoToToken(HttpServletRequest request) {
+    private Long getMemberInfoToToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         return tokenResolver.getAccessClaims(token);
     }

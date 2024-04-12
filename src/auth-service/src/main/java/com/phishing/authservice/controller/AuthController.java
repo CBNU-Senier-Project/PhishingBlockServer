@@ -1,5 +1,6 @@
 package com.phishing.authservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phishing.authservice.component.token.ReturnToken;
 import com.phishing.authservice.payload.request.SignInRequest;
 import com.phishing.authservice.service.AuthService;
@@ -11,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/auth/api/v1")
 @RequiredArgsConstructor
 @Validated
 public class AuthController {
@@ -31,5 +32,10 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<ReturnToken> refresh(HttpServletRequest request){
         return ResponseEntity.ok(authService.refresh(request));
+    }
+
+    @PostMapping("/passport")
+    public ResponseEntity<String> generatePassport(HttpServletRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok(authService.generatePassport(request));
     }
 }

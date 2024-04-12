@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: auth-service
   profiles:
     active: jwt, mail
   data:
@@ -17,5 +19,16 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: create-drop
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
 server:
   port: 8082
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

@@ -15,30 +15,24 @@ public class TokenResolver {
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
 
-    public MemberInfo getAccessClaims(String token){
+    public Long getAccessClaims(String token){
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(removePrefix(token))
                 .getBody();
 
-        return MemberInfo.builder()
-                .email(claims.get("USER_ID", String.class))
-                .nickname(claims.get("USER_NICKNAME", String.class))
-                .role(UserRole.valueOf(claims.get("USER_ROLE", String.class)))
-                .build();
+        return claims.get("USER_ID", Long.class);
     }
 
-    public MemberInfo getRefreshClaims(String token){
+    public Long getRefreshClaims(String token){
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(removePrefix(token))
                 .getBody();
 
-        return MemberInfo.builder()
-                .email(claims.get("USER_ID", String.class))
-                .build();
+        return claims.get("USER_ID", Long.class);
     }
 
     public long getExpiration(String token){

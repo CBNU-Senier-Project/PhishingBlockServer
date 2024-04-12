@@ -1,5 +1,9 @@
 package com.phishing.authservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phishing.authservice.component.passport.Passport;
+import com.phishing.authservice.domain.User;
 import com.phishing.authservice.payload.request.EditProfileRequest;
 import com.phishing.authservice.payload.request.SignUpRequest;
 import com.phishing.authservice.payload.request.VerifyEmailRequest;
@@ -14,12 +18,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/auth/api/v1")
 @RequiredArgsConstructor
 @Validated
 public class UserController {
     private final MailService mailService;
     private final UserService userService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/users/check")
     public ResponseEntity<Void> checkEmail(@RequestParam @Valid @NotNull String email) {
@@ -46,15 +51,18 @@ public class UserController {
     }
 
     @PostMapping("/users/edit")
-    public ResponseEntity<Void> editProfile(HttpServletRequest httpServletRequest
-            , @RequestBody @Valid EditProfileRequest editProfileRequest) {
-        userService.editProfile(httpServletRequest, editProfileRequest);
+    public ResponseEntity<Void> editProfile(@RequestHeader("X-Authorization") String passport
+            , @RequestBody @Valid EditProfileRequest editProfileRequest) throws JsonProcessingException {
+        Passport userInfo = objectMapper.readValue(passport, Passport.class);
+        userService.editProfile(userInfo, editProfileRequest);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/resign")
-    public ResponseEntity<Void> resignUser(HttpServletRequest httpServletRequest) {
-        userService.resignUser(httpServletRequest);
+    public ResponseEntity<Void> resignUser(
+            @RequestHeader("X-Authorization") String passport) throws JsonProcessingException {
+        Passport userInfo = objectMapper.readValue(passport, Passport.class);
+        userService.resignUser(userInfo);
         return ResponseEntity.ok().build();
     }
 

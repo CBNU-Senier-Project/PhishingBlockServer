@@ -20,12 +20,12 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
+                .anonymous(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/auth/api/v1/**").permitAll()
                         .requestMatchers("/v3/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/v1/signout").authenticated()
-                )
-                .build();
+                        .anyRequest().permitAll()
+                ).build();
     }
 }

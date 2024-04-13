@@ -22,8 +22,8 @@ public class TokenProvider {
     private String SECRET_KEY;
 
     public ReturnToken provideTokens(User user) {
-        Claims claims = buildClaims(user);
-        Claims refresh_claims = buildClaims(user.getEmail());
+        Claims claims = buildAccessClaims(user.getId());
+        Claims refresh_claims = buildRefreshClaims(user.getId());
         return new ReturnToken(
                 generateToken(claims, ACCESS_TIME),
                 generateToken(refresh_claims, REFRESH_TIME)
@@ -38,17 +38,17 @@ public class TokenProvider {
                 .compact();
     }
 
-    private static Claims buildClaims(User user) {
+    private static Claims buildAccessClaims(Long id) {
         Claims claims = Jwts.claims();
-        claims.put("USER_ID", user.getEmail());
-        claims.put("USER_NICKNAME", user.getNickname());
-        claims.put("USER_ROLE", user.getRole());
+        claims.put("TOKEN_TYPE", "ACCESS");
+        claims.put("USER_ID", id);
         return claims;
     }
 
-    private static Claims buildClaims(String email) {
+    private static Claims buildRefreshClaims(Long id) {
         Claims claims = Jwts.claims();
-        claims.put("USER_ID", email);
+        claims.put("TOKEN_TYPE", "REFRESH");
+        claims.put("USER_ID", id);
         return claims;
     }
 
